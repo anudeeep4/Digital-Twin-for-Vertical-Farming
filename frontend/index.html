@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lettuce Growth Digital Twin</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="header">
+    <h1>🌿 Lettuce Digital Twin</h1>
+    <span class="badge">Model: XGBoost</span>
+  </div>
+  
+  <div class="main-layout">
+    <!-- INPUT PANEL -->
+    <div class="panel input-panel">
+      <h2>Environmental Inputs</h2>
+      <div id="toast-container"></div>
+      
+      <div class="input-group">
+        <label for="co2">CO2 (ppm)</label>
+        <div class="input-controls">
+          <input type="range" id="co2" min="300" max="1200" step="1" value="422.6">
+          <input type="number" id="co2-num" min="300" max="1200" step="0.1" value="422.6">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="temperature">Temperature (°C)</label>
+        <div class="input-controls">
+          <input type="range" id="temperature" min="15" max="40" step="0.1" value="26.41">
+          <input type="number" id="temperature-num" min="15" max="40" step="0.01" value="26.41">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="humidity">Humidity (%)</label>
+        <div class="input-controls">
+          <input type="range" id="humidity" min="20" max="100" step="1" value="66.58">
+          <input type="number" id="humidity-num" min="20" max="100" step="0.01" value="66.58">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="radiation">Radiation (W/m²)</label>
+        <div class="input-controls">
+          <input type="range" id="radiation" min="50" max="800" step="1" value="234.67">
+          <input type="number" id="radiation-num" min="50" max="800" step="0.01" value="234.67">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="dat">Days After Transplant</label>
+        <div class="input-controls">
+          <input type="range" id="dat" min="1" max="60" step="1" value="32">
+          <input type="number" id="dat-num" min="1" max="60" step="1" value="32">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="predict-btn" class="primary-btn">Run Prediction <span class="loader" id="loader" style="display:none;"></span></button>
+        <button id="reset-btn" class="secondary-btn">Reset</button>
+      </div>
+    </div>
+
+    <!-- 3D VISUALIZATION -->
+    <div class="panel viz-panel">
+      <div id="canvas-container"></div>
+      
+      <!-- HUD Labels for Model Explanation -->
+      <div id="metrics-hud">
+        <div class="expl-label" id="label-leaves">Leaves area: 0.00 cm²</div>
+        <div class="expl-label" id="label-shoot">Shoot mass: 0.00 g</div>
+        <div class="expl-label" id="label-roots">Root mass: 0.00 g</div>
+      </div>
+
+      <div id="scene-controls">
+        <p>Interactive 3D View (Hover to pause)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- OUTPUT METRICS -->
+  <div class="metrics-container">
+    <div class="metrics-header">
+      <h2>Prediction Results</h2>
+      <span class="confidence">Model Accuracy: 95.49%</span>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric-card" title="Weight of the above-ground plant matter before drying.">
+        <h3>Shoot Fresh Wt (g)</h3>
+        <div class="metric-value-wrapper">
+            <span class="metric-value" id="out-shoot_fresh_weight">0.00</span>
+            <span class="delta" id="d-shoot_fresh_weight"></span>
+        </div>
+      </div>
+      <div class="metric-card" title="Dry weight of the above-ground plant matter.">
+        <h3>Shoot Dry Wt (g)</h3>
+        <div class="metric-value-wrapper">
+            <span class="metric-value" id="out-shoot_dry_weight">0.00</span>
+            <span class="delta" id="d-shoot_dry_weight"></span>
+        </div>
+      </div>
+      <div class="metric-card" title="Weight of the roots before drying.">
+        <h3>Root Fresh Wt (g)</h3>
+        <div class="metric-value-wrapper">
+            <span class="metric-value" id="out-root_fresh_weight">0.00</span>
+            <span class="delta" id="d-root_fresh_weight"></span>
+        </div>
+      </div>
+      <div class="metric-card" title="Dry weight of the roots.">
+        <h3>Root Dry Wt (g)</h3>
+        <div class="metric-value-wrapper">
+            <span class="metric-value" id="out-root_dry_weight">0.00</span>
+            <span class="delta" id="d-root_dry_weight"></span>
+        </div>
+      </div>
+      <div class="metric-card" title="Total surface area of all leaves.">
+        <h3>Leaf Area (cm²)</h3>
+        <div class="metric-value-wrapper">
+            <span class="metric-value" id="out-leaf_area">0.00</span>
+            <span class="delta" id="d-leaf_area"></span>
+        </div>
+      </div>
+      <div class="metric-card" title="Total wet weight of shoot + roots.">
+        <h3>Total Fresh Wt (g)</h3>
+        <div class="metric-value-wrapper">
+            <span class="metric-value" id="out-total_fresh_weight">0.00</span>
+            <span class="delta" id="d-total_fresh_weight"></span>
+        </div>
+      </div>
+      <div class="metric-card" title="Total dry weight of shoot + roots.">
+        <h3>Total Dry Wt (g)</h3>
+        <div class="metric-value-wrapper">
+            <span class="metric-value" id="out-total_dry_weight">0.00</span>
+            <span class="delta" id="d-total_dry_weight"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="app.js"></script>
+  <script src="plant-viz.js"></script>
+</body>
+</html>
